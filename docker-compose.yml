@@ -1,0 +1,48 @@
+services:
+  backend:
+    build:
+      context: backend    
+    volumes:
+      - ./backend:/backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0.43
+    environment:
+      MYSQL_DATABASE: todo_db
+      MYSQL_USER: todo_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+    command:
+        mysqld --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    secrets:
+        - mysql_root_password
+        - mysql_user_password
+
+  frontend:
+    build:
+      context: frontend
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/app/node_modules
+    ports:
+      - 3000:3000
+    environment:
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+volumes:
+  mysql_data:
+
+secrets:
+    mysql_root_password:
+        file: ./secrets/mysql_root_password
+    mysql_user_password:
+        file: ./secrets/mysql_user_password
