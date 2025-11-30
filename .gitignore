@@ -1,5 +1,5 @@
 /secrets/*
-/backend/app/todo_api/__pycache__/*
+/backend/app/config/__pycache__/*
   --- IGNORE ---
 
 
